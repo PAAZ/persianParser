@@ -25,6 +25,7 @@
     var VERSION   = "0.1.0"
       , hasModule = (typeof module !== 'undefined' && module.exports)
       , chars     = ''
+      , tagScape = false // toggle for html tags
       , special   = "اأإآدذرزوؤء";
         special  += String.fromCharCode(0xFEFC,0xFEFB,0xFEF8,0xFEF7,0xFEFA,0xFEF9,0xFEF6,0xFEF5);
 
@@ -56,11 +57,18 @@
           , strLength = input.length;
 
         for (var i = 0; i < strLength; i++) {
-            string += _replaceChar(i);
+            if (chars.charAt(i) === '<') // tag started
+                tagScape = true;
+            if (chars.charAt(i-1) === '>') // tag finished
+                tagScape = false;
+            if (!tagScape)
+                string += _replaceChar(i);
+            else if (tagScape)
+                string += chars.charAt(i);
         }
 
         this._str = string;
-        return this;
+        return string;
     }
 
     /**
